@@ -8,21 +8,21 @@ module Test.Hspec.Wai.Matcher (
 
 import           Control.Applicative
 import           Control.Monad
+import           Data.ByteString         (ByteString, isInfixOf)
+import qualified Data.ByteString.Lazy    as LB
 import           Data.Maybe
 import           Data.Monoid
 import           Data.String
 import           Data.Text.Lazy.Encoding (encodeUtf8)
-import           Data.ByteString (ByteString)
-import qualified Data.ByteString.Lazy as LB
 import           Network.HTTP.Types
 import           Network.Wai.Test
 
 import           Test.Hspec.Wai.Util
 
 data ResponseMatcher = ResponseMatcher {
-  matchStatus :: Int
+  matchStatus  :: Int
 , matchHeaders :: [MatchHeader]
-, matchBody :: Maybe LB.ByteString
+, matchBody    :: Maybe LB.ByteString
 }
 
 data MatchHeader = MatchHeader ([Header] -> Maybe String)
@@ -45,7 +45,7 @@ match (SResponse (Status status _) headers body) (ResponseMatcher expectedStatus
   , expectedBody >>= matchBody_ body
   ]
   where
-    matchBody_ (toStrict -> actual) (toStrict -> expected) = actualExpected "body mismatch:" actual_ expected_ <$ guard (actual /= expected)
+    matchBody_ (toStrict -> actual) (toStrict -> expected) = actualExpected "body mismatch:" actual_ expected_ <$ guard (actual `doesNotContain` expected)
       where
         (actual_, expected_) = case (safeToString actual, safeToString expected) of
           (Just x, Just y) -> (x, y)
@@ -57,6 +57,9 @@ match (SResponse (Status status _) headers body) (ResponseMatcher expectedStatus
       , "  expected: " ++ expected
       , "  but got:  " ++ actual
       ]
+
+doesNotContain :: ByteString -> ByteString -> Bool
+doesNotContain a b = not (a `isInfixOf` b)
 
 checkHeaders :: [Header] -> [MatchHeader] -> Maybe String
 checkHeaders headers m = case go m of
