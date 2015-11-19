@@ -59,7 +59,7 @@ match (SResponse (Status status _) headers body) (ResponseMatcher expectedStatus
       ]
 
 doesNotContain :: ByteString -> ByteString -> Bool
-doesNotContain a b = not (a `isInfixOf` b)
+doesNotContain a b = not (b `isInfixOf` a)
 
 checkHeaders :: [Header] -> [MatchHeader] -> Maybe String
 checkHeaders headers m = case go m of

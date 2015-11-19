@@ -37,13 +37,18 @@ spec = do
           , "  but got:  foo"
           ]
 
+    context "when body contains match" $ do
+      it "returns Nothing" $ do
+        SResponse status200 [] "foo bar" `match` "bar"
+          `shouldBe` Nothing
+
       context "when one body contains unsafe characters" $ do
         it "uses show for both bodies in the error message" $ do
-          SResponse status200 [] "foo\nbar" `match` "bar"
+          SResponse status200 [] "foo\nfoo" `match` "bar"
             `shouldBe` (Just . unlines) [
               "body mismatch:"
             , "  expected: \"bar\""
-            , "  but got:  \"foo\\nbar\""
+            , "  but got:  \"foo\\nfoo\""
             ]
 
     context "when both status and body do not match" $ do
