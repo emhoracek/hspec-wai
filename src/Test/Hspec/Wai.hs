@@ -21,8 +21,12 @@ module Test.Hspec.Wai (
 -- * Matching on the response
 , shouldRespondWith
 , ResponseMatcher(..)
-, MatchHeader(..)
-, (<:>)
+, code
+, headers
+, body
+, code'
+, headers'
+, body'
 
 -- * Helpers and re-exports
 , liftIO

@@ -30,31 +30,31 @@ spec :: Spec
 spec = do
   describe "get" $ with (return $ expectMethod methodGet) $
     it "sends a get request" $
-      get "/" `shouldRespondWith` 200
+      get "/" `shouldRespondWith` code 200
 
   describe "post" $ with (return $ expectMethod methodPost) $
     it "sends a post request" $
-      post "/" "" `shouldRespondWith` 200
+      post "/" "" `shouldRespondWith` code 200
 
   describe "put" $ with (return $ expectMethod methodPut) $
     it "sends a put request" $
-      put "/" "" `shouldRespondWith` 200
+      put "/" "" `shouldRespondWith` code 200
 
   describe "options" $ with (return $ expectMethod methodOptions) $
     it "sends an options request" $
-      options "/" `shouldRespondWith` 200
+      options "/" `shouldRespondWith` code 200
 
   describe "delete" $ with (return $ expectMethod methodDelete) $
     it "sends a delete request" $
-      delete "/" `shouldRespondWith` 200
+      delete "/" `shouldRespondWith` code 200
 
   describe "request" $ with (return $ expectRequest methodGet "/foo" body accept) $
     it "sends method, path, headers, and body" $
-      request methodGet "/foo" accept (BL.fromChunks [body]) `shouldRespondWith` 200
+      request methodGet "/foo" accept (BL.fromChunks [body]) `shouldRespondWith` code 200
 
   describe "postHtmlForm" $ with (return $ expectRequest methodPost "/foo" "foo=bar" formEncoded) $
     it "sends a post request with form-encoded params" $
-      postHtmlForm "/foo" [("foo", "bar")] `shouldRespondWith` 200
+      postHtmlForm "/foo" [("foo", "bar")] `shouldRespondWith` code 200
 
   where
     accept = [(hAccept, "application/json")]
