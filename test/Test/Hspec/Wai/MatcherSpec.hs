@@ -1,3 +1,4 @@
+
 {-# LANGUAGE OverloadedStrings #-}
 module Test.Hspec.Wai.MatcherSpec (main, spec) where
 
@@ -61,8 +62,42 @@ spec = do
           , "body mismatch:"
           , "  expected: bar"
           , "  but got:  foo"
-          ]
+          ]      
+  
+    context "when matching css selectors" $ do
+       
+      it "can find matches for a selector" $ do
+        selectorMatches ".heading"  "<h1 class=\"heading\">Test</h1>"
+          `shouldBe` ["Test"]
+      
+      it "can find matches for a selector" $ do
+        selectorMatches ".wrong"  "<h1 class=\"heading\">Test</h1>"
+          `shouldBe` []
 
+      it "can match selectors" $ do
+        (hasSelector' ".heading" "<h1 class=\"heading\">Test</h1>")
+        `shouldBe` True
+
+      it "can match selectors" $ do
+        (hasSelector' ".wrong" "<h1 class=\"heading\">Test</h1>")
+        `shouldBe` False
+      
+      it "can match text in selectors" $ do
+        (hasSelector ".heading" "Test" "<h1 class=\"heading\">Test</h1>")
+        `shouldBe` True
+      
+      it "matches with correct selector" $ do
+        SResponse status200 [] "<h1 class=\"heading\">Test</h1>"
+          `match` css ".heading" "Test"
+          `shouldBe` Nothing
+          
+      it "doesn't match with wrong selector" $ do
+        SResponse status200 [] "<h1 class=\"wrong\">Test</h1>"
+          `match` css ".heading" "Test"
+          `shouldBe` (Just . unlines) [
+            "selector mismatch:"
+          , "  expected: \"Test\" in .heading"
+          , "  but got:  Selector not found." ]
 {--
     context "when matching headers" $ do
       context "when header is missing" $ do
